@@ -45,24 +45,27 @@ def pad(x,y):
 
 
 
+
 def subquadratic_multiply(x, y):
-    ### TODO
-  xvec, yvec = pad(x.binary_vec, y.binary_vec)
+    
+  if len(x) == 1 or len(y) == 1:
+      return binary2int(x).decimal_val * binary2int(y).decimal_val
 
-  if binary2int(xvec).decimal_val <= 1 and binary2int(yvec).decimal_val <= 1:
-      return BinaryNumber(binary2int(xvec).decimal_val * binary2int(yvec).decimal_val)
+    
+  x, y = pad(x, y)
 
-  x_left, x_right = split_number(xvec)
-  y_left, y_right = split_number(yvec)
+    
+  xL, xR = split_number(x)
+  yL, yR = split_number(y)
 
-  one = bit_shift(subquadratic_multiply(x_left, y_left), len(xvec))
-  two = bit_shift(subquadratic_multiply(x_left, y_right), len(xvec) // 2)
-  three = bit_shift(subquadratic_multiply(x_right, y_left), len(xvec) // 2)
-  four = subquadratic_multiply(x_right, y_right)
+    
+  part1 = subquadratic_multiply(xL.binary_vec, yL.binary_vec)
+  part2 = subquadratic_multiply(xL.binary_vec, yR.binary_vec) + subquadratic_multiply(xR.binary_vec, yL.binary_vec)
+  part3 = subquadratic_multiply(xR.binary_vec, yR.binary_vec)
 
-  result = BinaryNumber(one.decimal_val + two.decimal_val + three.decimal_val + four.decimal_val)
+    
+  return part1 + bit_shift(binary2int(part2), len(x)) + bit_shift(binary2int(part3), 2 * len(x) // 2)
 
-  return result
 
 
 
